@@ -34,8 +34,3 @@ def check_for_matching_if_nan(data: pd.DataFrame, ref_cols: tuple = ('scientific
     return df_temp.loc[~df_temp.index.isna()]
 
 
-df = pd.read_csv('/home/noureddine/PycharmProjects/drugs_graph/tests/data/input1.csv', index_col=0)
-# cols = ('scientific_title', 'date')
-cols = ("a", "b")
-a = check_for_matching_if_nan(df, ref_cols=cols)
-print(a)
