@@ -1,5 +1,14 @@
 from dotenv import load_dotenv
 import os
+import logging as log
+
+from pathlib import Path
+
+log.basicConfig(filename="logs",
+                filemode='a',
+                format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                datefmt='%H:%M:%S',
+                level=log.DEBUG)
 
 load_dotenv("drugs_graph/conf/.env", override=True)
 
