@@ -18,3 +18,14 @@ df_out1 = pd.read_csv(f"{DATA_FOLDER}/output1.csv", index_col=0)
 def test_check_for_matching_if_nan(data_in, ref_cols, expected):
     res = utils.check_for_matching_if_nan(data_in, ref_cols=ref_cols)
     pd.testing.assert_frame_equal(res, expected)
+
+
+@pytest.mark.parametrize(
+    "path, kwargs, expected",
+    (
+            [Path(f"{DATA_FOLDER}/input1.csv"), {"index_col": 0}, df_in1],
+    )
+)
+def test_get_df(path, kwargs, expected):
+    res = utils.get_df(path, kwargs)
+    pd.testing.assert_frame_equal(res, expected)

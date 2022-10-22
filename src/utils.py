@@ -1,4 +1,18 @@
+# from typing import Union
+
 import pandas as pd
+from pathlib import Path
+
+from conf.settings import log
+
+
+def get_df(file_path: Path, kwarg: dict = None) -> pd.DataFrame:
+    if kwarg is None:
+        kwarg = {}
+    if str(file_path).endswith('.csv'):
+        log.info(f"reading {file_path}")
+        # print(f"reading {file_path}")
+        return pd.read_csv(file_path, **kwarg)
 
 
 def check_for_matching_if_nan(data: pd.DataFrame, ref_cols: tuple = ('scientific_title', 'date')) -> pd.DataFrame:
@@ -32,5 +46,3 @@ def check_for_matching_if_nan(data: pd.DataFrame, ref_cols: tuple = ('scientific
     df_temp = data.copy()
     df_temp.loc[index_to_update] = df_temp.loc[index_to_update].fillna(df_w_nan)
     return df_temp.loc[~df_temp.index.isna()]
-
-
