@@ -22,4 +22,4 @@ Business Rules:
 *     A drug is considered as mentioned by a journal if it is mentioned in a publication issued by this journal.
 
 
-![alt text](https://github.com/nbouml/drugs_graph/img/master/dgraph.png?raw=true)
+![alt text](https://github.com/nbouml/drugs_graph/blob/master/img/dgrap.png)
