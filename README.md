@@ -4,7 +4,7 @@
 ![ubuntu](https://img.shields.io/badge/Ubuntu-supported--tested-success)
 ![unix](https://img.shields.io/badge/Other%20Unix-supported--untested-yellow)
 
-![python](https://img.shields.io/pypi/pyversions/complex)
+![python](https://img.shields.io/badge/python-3.8-blue.svg)
 
 
 ##### Contact
