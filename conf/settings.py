@@ -1,16 +1,14 @@
 from dotenv import load_dotenv
 import os
-import logging as log
 
 from pathlib import Path
 
-log.basicConfig(filename="logs",
-                filemode='a',
-                format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                datefmt='%H:%M:%S',
-                level=log.DEBUG)
+from set_logging import setup_logger, logging
 
-load_dotenv("drugs_graph/conf/.env", override=True)
+setup_logger('log', 'drugs_graph.log', logging.DEBUG)
+log = logging.getLogger('log')
+
+load_dotenv("conf/.env", override=True)
 
 input_data_path = Path(os.getenv('DRUGS_GRAPH_INPUT_DATA_PATH', ''))
 
