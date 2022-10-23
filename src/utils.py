@@ -11,8 +11,9 @@ def get_df(file_path: Path, kwarg: dict = None) -> pd.DataFrame:
         kwarg = {}
     if str(file_path).endswith('.csv'):
         log.info(f"reading {file_path}")
-        # print(f"reading {file_path}")
         return pd.read_csv(file_path, **kwarg)
+    else:
+        log.warning(f"cannot read the file {file_path}")
 
 
 def check_for_matching_if_nan(data: pd.DataFrame, ref_cols: tuple = ('scientific_title', 'date')) -> pd.DataFrame:
