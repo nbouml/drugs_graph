@@ -17,10 +17,3 @@ def setup_logger(logger_name, log_file, level=logging.WARNING):
     l.setLevel(level)
     l.addHandler(fileHandler)
     l.addHandler(streamHandler)
-
-
-if __name__ == '__main__':
-    setup_logger('log', 'Atest.log', logging.DEBUG)
-    log = logging.getLogger('log')
-    log.info('TEST')
-    log.debug('TEST')

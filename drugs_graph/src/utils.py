@@ -3,7 +3,9 @@
 import pandas as pd
 from pathlib import Path
 
-from conf.settings import log
+import logging
+
+log = logging.getLogger(__name__)
 
 
 def get_df(file_path: Path, kwarg: dict = None) -> pd.DataFrame:
@@ -84,3 +86,23 @@ def convert_col_in_datetime(data: pd.DataFrame,
         df[columns] = pd.to_datetime(df[columns])
 
     return df
+
+
+def str_sniffer(str_target: str, df_to_sniff: pd.DataFrame, column_to_sniff) -> pd.Index:
+    """
+
+    Parameters
+    ----------
+    str_target: str
+
+    df_to_sniff
+    column_to_sniff
+
+    Returns
+    -------
+
+    """
+    column_to_sniff = column_to_sniff.lower()
+    col_ser = df_to_sniff[column_to_sniff].str.lower()
+    res = col_ser.str.find(str_target)
+    return res[res >= 0].index

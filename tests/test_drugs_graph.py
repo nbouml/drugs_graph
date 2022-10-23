@@ -1,12 +1,19 @@
 import pandas as pd
 from pathlib import Path
-from src import utils
+from drugs_graph.src import utils
 import pytest
+
 
 DATA_FOLDER = Path(__file__, fs="local").parent / "data"
 df_in1 = pd.read_csv(f"{DATA_FOLDER}/input1.csv", index_col=0)
 df_out1 = pd.read_csv(f"{DATA_FOLDER}/output1.csv", index_col=0)
 df_in2 = pd.read_csv(f"{DATA_FOLDER}/input2.csv", index_col=0)
+df_out2 = df_in2.copy()
+df_out2['a'] = pd.to_datetime(df_out2['a'], dayfirst=True)
+df_out3 = df_out2.copy()
+df_out3['b'] = pd.to_datetime(df_out3['b'], dayfirst=True)
+df_out4 = df_in2.copy()
+df_out4['b'] = pd.to_datetime(df_out4['b'], format="%d/%m/%y")
 
 
 @pytest.mark.parametrize(
@@ -30,14 +37,6 @@ def test_check_for_matching_if_nan(data_in, ref_cols, expected):
 def test_get_df(path, kwargs, expected):
     res = utils.get_df(path, kwargs)
     pd.testing.assert_frame_equal(res, expected)
-
-
-df_out2 = df_in2.copy()
-df_out2['a'] = pd.to_datetime(df_out2['a'], dayfirst=True)
-df_out3 = df_out2.copy()
-df_out3['b'] = pd.to_datetime(df_out3['b'], dayfirst=True)
-df_out4 = df_in2.copy()
-df_out4['b'] = pd.to_datetime(df_out4['b'], format="%d/%m/%y")
 
 
 @pytest.mark.parametrize(

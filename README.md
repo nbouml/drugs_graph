@@ -18,8 +18,8 @@ the different scientific publications and finally the journals with the date ass
 The representation below allows to visualize what is expected.
 
 Business Rules:
-*     A drug is considered mentioned in a PubMed article or clinical trial if it is mentioned in the title of the publication.
-*     A drug is considered as mentioned by a journal if it is mentioned in a publication issued by this journal.
+* A drug is considered mentioned in a PubMed article or clinical trial if it is mentioned in the title of the publication.
+* A drug is considered as mentioned by a journal if it is mentioned in a publication issued by this journal.
 
 
 ![alt text](https://github.com/nbouml/drugs_graph/blob/master/img/dgrap.png)
