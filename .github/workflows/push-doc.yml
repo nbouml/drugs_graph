@@ -42,12 +42,12 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}
+          key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
 
       - name: build
         run: |
           python -m pip install --upgrade pip
-          pip install --upgrade --upgrade-strategy eager .
+          pip install --upgrade --upgrade-strategy eager -r requirements.txt
 
       - name: make doc
         run: |

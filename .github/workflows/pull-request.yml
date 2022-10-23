@@ -56,7 +56,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}
+          key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
 
       - name: Install dependencies
         run: |
@@ -65,7 +65,7 @@ jobs:
           pip install --upgrade --upgrade-strategy eager pytest
           pip install --upgrade --upgrade-strategy eager pytest-gitignore
           pip install --upgrade --upgrade-strategy eager pytest-github-actions-annotate-failures
-          pip install --upgrade --upgrade-strategy eager .
+          pip install --upgrade --upgrade-strategy eager -r requirements.txt
 
       - name: Test with pytest
         run: |
