@@ -3,10 +3,11 @@ import os
 
 from pathlib import Path
 
-from set_logging import setup_logger, logging
+import logging
+from set_logging import setup_logger
 
 setup_logger('log', 'drugs_graph.log', logging.DEBUG)
-log = logging.getLogger('log')
+log = logging.getLogger(__name__)
 
 load_dotenv("conf/.env", override=True)
 
