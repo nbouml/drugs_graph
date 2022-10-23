@@ -1,4 +1,19 @@
+# from typing import Union
+
 import pandas as pd
+from pathlib import Path
+
+from conf.settings import log
+
+
+def get_df(file_path: Path, kwarg: dict = None) -> pd.DataFrame:
+    if kwarg is None:
+        kwarg = {}
+    if str(file_path).endswith('.csv'):
+        log.info(f"reading {file_path}")
+        return pd.read_csv(file_path, **kwarg)
+    else:
+        log.warning(f"cannot read the file {file_path}")
 
 
 def check_for_matching_if_nan(data: pd.DataFrame, ref_cols: tuple = ('scientific_title', 'date')) -> pd.DataFrame:
@@ -34,8 +49,38 @@ def check_for_matching_if_nan(data: pd.DataFrame, ref_cols: tuple = ('scientific
     return df_temp.loc[~df_temp.index.isna()]
 
 
-df = pd.read_csv('/home/noureddine/PycharmProjects/drugs_graph/tests/data/input1.csv', index_col=0)
-# cols = ('scientific_title', 'date')
-cols = ("a", "b")
-a = check_for_matching_if_nan(df, ref_cols=cols)
-print(a)
+def convert_col_in_datetime(data: pd.DataFrame,
+                            columns: tuple = None,
+                            dateformat: str = None,
+                            day_first: bool = False) -> pd.DataFrame:
+    """
+    convert column(s) of a dataframe from string to datetime.
+
+    Parameters
+    ----------
+    data: pd.DataFrame
+        input data
+    columns: tuple
+            columns to convert
+    dateformat: str
+            The string to parse time, e.g. "%d/%m/%Y". Note that "%f" will parse all the way up to nanoseconds.
+    day_first:
+            Specify a date parse order if arg is str or is list-like.
+            If True, parses dates with the day first, e.g. "10/11/12" is parsed as 2012-11-10.
+
+    Returns
+    -------
+    pd.DataFrame
+
+    dataframe with the right format for the concerned columns
+    """
+    columns = list(columns)
+    df = data.copy()
+    if dateformat is not None:
+        df[columns] = df[columns].apply(lambda x: pd.to_datetime(x, format=dateformat))
+    elif day_first:
+        df[columns] = df[columns].apply(lambda x: pd.to_datetime(x, dayfirst=True))
+    else:
+        df[columns] = pd.to_datetime(df[columns])
+
+    return df
