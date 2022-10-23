@@ -1,5 +1,5 @@
 from ..conf import settings as s
-import utils as ut
+from . import utils as ut
 import logging
 
 log = logging.getLogger(__name__)
