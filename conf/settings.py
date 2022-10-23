@@ -16,4 +16,6 @@ clinical_trials_file = input_data_path / os.getenv('DRUGS_GRAPH_CLINICAL_TRIALS_
 drugs_file = input_data_path / os.getenv('DRUGS_GRAPH_DRUGS_FILE', '')
 pubmed_file = input_data_path / os.getenv('DRUGS_GRAPH_PUBMED_FILE', '')
 
+cols_ref_ct = tuple(os.getenv('DRUGS_GRAPH_COLS_REF_CT', '').split(','))
+
 output_file = input_data_path / os.getenv('DRUGS_GRAPH_OUTPUT_FILE', '')
