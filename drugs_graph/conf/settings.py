@@ -9,7 +9,7 @@ from set_logging import setup_logger
 setup_logger('log', 'drugs_graph.log', logging.DEBUG)
 log = logging.getLogger(__name__)
 
-load_dotenv("conf/.env", override=True)
+load_dotenv("drugs_graph/conf/.env", override=True)
 
 input_data_path = Path(os.getenv('DRUGS_GRAPH_INPUT_DATA_PATH', ''))
 
