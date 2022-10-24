@@ -1,6 +1,9 @@
+from typing import Union
+
 import pandas as pd
 from pathlib import Path
 from drugs_graph.src import utils
+# noinspection PyPackageRequirements
 import pytest
 
 
@@ -51,4 +54,20 @@ def test_convert_col_in_datetime(data, columns, dateformat, day_first, expected)
     # noinspection PyTypeChecker
     res = utils.convert_col_in_datetime(data=data, columns=columns, dateformat=dateformat, day_first=day_first)
     # noinspection PyTypeChecker
+    pd.testing.assert_frame_equal(res, expected)
+
+
+@pytest.mark.parametrize(
+    "file_path, kwarg, expected",
+    (
+            [f"{DATA_FOLDER}/input1.csv", {'index_col': 0}, df_in1],
+            ["files/data.csv", None, None],
+    )
+)
+def test_get_df(file_path: Path, kwarg: dict, expected: Union[pd.DataFrame, None]):
+    file_path = Path(file_path)
+    res = utils.get_df(file_path, kwarg)
+    if expected is None:
+        assert expected == res
+        return
     pd.testing.assert_frame_equal(res, expected)

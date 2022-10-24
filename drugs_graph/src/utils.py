@@ -1,4 +1,5 @@
 # from typing import Union
+from typing import Union
 
 import pandas as pd
 from pathlib import Path
@@ -8,14 +9,31 @@ import logging
 log = logging.getLogger(__name__)
 
 
-def get_df(file_path: Path, kwarg: dict = None) -> pd.DataFrame:
+def get_df(file_path: Path, kwarg: dict = None) -> Union[pd.DataFrame, None]:
+    """
+    read csv files and return a pandas dataframe object
+
+    Parameters
+    ----------
+    file_path: pathlib.Path
+                file path
+    kwarg: dict
+            Parameters of pd.read_csv
+
+    Returns
+    -------
+    pd.DataFrame, None
+
+    returns None if the file does not exist, otherwise a dataframe.
+
+    """
     if kwarg is None:
         kwarg = {}
-    if str(file_path).endswith('.csv'):
+    if str(file_path).endswith('.csv') and file_path.is_file():
         log.info(f"reading {file_path}")
         return pd.read_csv(file_path, **kwarg)
     else:
-        log.warning(f"cannot read the file {file_path}")
+        log.warning(f"cannot read the file {file_path}. get_df will return a None object")
 
 
 def check_for_matching_if_nan(data: pd.DataFrame, ref_cols: tuple = ('scientific_title', 'date')) -> pd.DataFrame:
