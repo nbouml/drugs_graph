@@ -14,6 +14,12 @@ log = logging.getLogger(log)
 
 load_dotenv("drugs_graph/conf/.env", override=True)
 
+title_str = Path(os.getenv('DRUGS_GRAPH_DAG_TITLE_STR', ''))
+drug_str = Path(os.getenv('DRUGS_GRAPH_DAG_DRUG_STR', ''))
+journal_str = Path(os.getenv('DRUGS_GRAPH_DAG_JOURNAL_STR', ''))
+pubmed_str = Path(os.getenv('DRUGS_GRAPH_DAG_PUBMED_STR', ''))
+date_str = Path(os.getenv('DRUGS_GRAPH_DAG_DATE_STR', ''))
+
 input_data_path = Path(os.getenv('DRUGS_GRAPH_INPUT_DATA_PATH', ''))
 
 clinical_trials_file = input_data_path / os.getenv('DRUGS_GRAPH_CLINICAL_TRIALS_FILE', '')
