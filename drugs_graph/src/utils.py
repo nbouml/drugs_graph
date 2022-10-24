@@ -5,8 +5,12 @@ import pandas as pd
 from pathlib import Path
 
 import logging
+from set_logging import setup_logger
 
-log = logging.getLogger(__name__)
+logfile = "drugs_graph.log"
+log = 'utils'
+setup_logger(log, logfile, logging.DEBUG)
+log = logging.getLogger(log)
 
 
 def get_df(file_path: Path, kwarg: dict = None) -> Union[pd.DataFrame, None]:
