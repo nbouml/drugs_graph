@@ -71,3 +71,20 @@ def test_get_df(file_path: Path, kwarg: dict, expected: Union[pd.DataFrame, None
         assert expected == res
         return
     pd.testing.assert_frame_equal(res, expected)
+
+
+@pytest.mark.parametrize(
+    "str_target, df_to_sniff, column_to_sniff, expected",
+    (
+            ['text1', df_out1, 'a', pd.Index(['id1'])],
+            ['what', df_out1, 'b', pd.Index([])],
+            ['AAAj55!!', df_out1, 'b', pd.Index([])]
+    )
+)
+def test_str_sniffer(str_target: str, df_to_sniff: pd.DataFrame,
+                     column_to_sniff: str,
+                     expected: pd.Index):
+    res = utils.str_sniffer(str_target, df_to_sniff, column_to_sniff)
+    expected = expected.to_list()
+    res = res.to_list()
+    assert res == expected

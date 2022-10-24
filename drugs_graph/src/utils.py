@@ -106,21 +106,28 @@ def convert_col_in_datetime(data: pd.DataFrame,
     return df
 
 
-def str_sniffer(str_target: str, df_to_sniff: pd.DataFrame, column_to_sniff) -> pd.Index:
+def str_sniffer(str_target: str, df_to_sniff: pd.DataFrame, column_to_sniff: str) -> pd.Index:
     """
+
+    searches for a string in a column of a Dataframe and returns the index that contains this string.
 
     Parameters
     ----------
     str_target: str
+                the string you are looking for.
 
-    df_to_sniff
-    column_to_sniff
+    df_to_sniff: pd.DataFrame
+                target dataframe
 
+    column_to_sniff: str
+                    target column id df_to_sniff
     Returns
     -------
+    pd.Index
 
+    index contains str_target
     """
-    column_to_sniff = column_to_sniff.lower()
+    str_target = str_target.lower()
     col_ser = df_to_sniff[column_to_sniff].str.lower()
     res = col_ser.str.find(str_target)
     return res[res >= 0].index
