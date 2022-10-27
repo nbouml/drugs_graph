@@ -1,8 +1,8 @@
 import pandas as pd
 import json
 
-from conf import settings as s
-from src import utils as ut
+from drugs_graph.conf import settings as s
+from drugs_graph.src import utils as ut
 import logging
 from drugs_graph.set_logging import setup_logger
 
