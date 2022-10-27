@@ -4,19 +4,33 @@ import os
 from pathlib import Path
 
 import logging
-from set_logging import setup_logger
+from drugs_graph.set_logging import setup_logger
 
-setup_logger('log', 'drugs_graph.log', logging.DEBUG)
-log = logging.getLogger(__name__)
+logfile = "drugs_graph.log"
 
-load_dotenv("conf/.env", override=True)
+log = 'settings'
+setup_logger('settings', logfile, logging.DEBUG)
+log = logging.getLogger(log)
+
+load_dotenv("drugs_graph/conf/.env", override=True)
+
+title_str = os.getenv('DRUGS_GRAPH_DAG_TITLE_STR', '')
+drug_str = os.getenv('DRUGS_GRAPH_DAG_DRUG_STR', '')
+journal_str = os.getenv('DRUGS_GRAPH_DAG_JOURNAL_STR', '')
+pubmed_str = os.getenv('DRUGS_GRAPH_DAG_PUBMED_STR', '')
+date_str = os.getenv('DRUGS_GRAPH_DAG_DATE_STR', '')
+scientific_title_str = os.getenv('DRUGS_GRAPH_DAG_SCIENTIFIC_TITLE', '')
+clinical_trials_str = os.getenv('DRUGS_GRAPH_DAG_CLINICAL_TRIALS_STR', '')
 
 input_data_path = Path(os.getenv('DRUGS_GRAPH_INPUT_DATA_PATH', ''))
+input_base_path = Path(os.getenv('DRUGS_GRAPH_BASE_PATH', ''))
+input_results_path = Path(os.getenv('DRUGS_GRAPH_RESULTS_PATH', '')) / os.getenv('DRUGS_GRAPH_OUTPUT_FILE', '')
+results_path = Path(os.getenv('DRUGS_GRAPH_RESULTS_PATH', ''))
 
-clinical_trials_file = input_data_path / os.getenv('DRUGS_GRAPH_CLINICAL_TRIALS_FILE', '')
-drugs_file = input_data_path / os.getenv('DRUGS_GRAPH_DRUGS_FILE', '')
-pubmed_file = input_data_path / os.getenv('DRUGS_GRAPH_PUBMED_FILE', '')
+clinical_trials_file = os.getenv('DRUGS_GRAPH_CLINICAL_TRIALS_FILE', '')
+drugs_file = os.getenv('DRUGS_GRAPH_DRUGS_FILE', '')
+pubmed_file = os.getenv('DRUGS_GRAPH_PUBMED_FILE', '')
+journals_file = os.getenv('DRUGS_GRAPH_JOURNALS_FILE', '')
+output_file = os.getenv('DRUGS_GRAPH_OUTPUT_FILE', '')
 
 cols_ref_ct = tuple(os.getenv('DRUGS_GRAPH_COLS_REF_CT', '').split(','))
-
-output_file = input_data_path / os.getenv('DRUGS_GRAPH_OUTPUT_FILE', '')
