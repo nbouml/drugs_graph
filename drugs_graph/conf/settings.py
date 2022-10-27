@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 import logging
-from set_logging import setup_logger
+from drugs_graph.set_logging import setup_logger
 
 logfile = "drugs_graph.log"
 
@@ -34,4 +34,3 @@ journals_file = os.getenv('DRUGS_GRAPH_JOURNALS_FILE', '')
 output_file = os.getenv('DRUGS_GRAPH_OUTPUT_FILE', '')
 
 cols_ref_ct = tuple(os.getenv('DRUGS_GRAPH_COLS_REF_CT', '').split(','))
-

@@ -1,11 +1,10 @@
-# from typing import Union
 from typing import Union
 
 import pandas as pd
 from pathlib import Path
 
 import logging
-from set_logging import setup_logger
+from drugs_graph.set_logging import setup_logger
 
 logfile = "drugs_graph.log"
 log = 'utils'
@@ -135,3 +134,32 @@ def str_sniffer(str_target: str, df_to_sniff: pd.DataFrame, column_to_sniff: str
     col_ser = df_to_sniff[column_to_sniff].str.lower()
     res = col_ser.str.find(str_target)
     return res[res >= 0].index
+
+
+def get_sub_target_dict(data: pd.DataFrame, str_target: str, col_to_key: str, col_to_value: str) -> dict:
+    """
+    extract a dict from a dataframe if str_target is in col_to_key
+
+    Parameters
+    ----------
+    data: pd.DataFrame
+            target dataframe
+    str_target: str
+                the string that we are looking for
+
+    col_to_key: str
+                the main columns that will contain str_target and the dictionary key
+    col_to_value: str
+                the columns that will become the values of the output dictionary
+
+    Returns
+    -------
+    dict
+
+    dictionary with col_to_key in the keys and col_col_to_value in the values
+
+    """
+    index = str_sniffer(str_target, data, col_to_key)
+    sub_df = data.loc[index, [col_to_key, col_to_value]]
+    sub_df = sub_df.set_index(col_to_key)
+    return sub_df[col_to_value].to_dict()
