@@ -1,10 +1,11 @@
+[![doc](https://img.shields.io/badge/-Documentation-blue)](https://nbouml.github.io/drugs_graph/)
 
 
 #### Compatibilities
 ![ubuntu](https://img.shields.io/badge/Ubuntu-supported--tested-success)
 ![unix](https://img.shields.io/badge/Other%20Unix-supported--untested-yellow)
 
-![python](https://img.shields.io/badge/python-3.8-blue.svg)
+![python](https://img.shields.io/badge/python-3.9-blue.svg)
 
 
 ##### Contact
