@@ -2,15 +2,11 @@
 FROM python:3.9-buster
 
 COPY requirements.txt .
-COPY . /drugs_graph
-# RUN apt install vim -y
-RUN pip install pip -U
-RUN pip install /drugs_graph/.
-RUN chmod -R 777 /drugs_graph/
+COPY main_drugs_graph.py .
+COPY ./drugs_graph /drugs_graph
+COPY ./data /data
 
-RUN useradd -ms /bin/bash nboumlaik
-USER nboumlaik
-
-#WORKDIR /home/nboumlaik
-WORKDIR /drugs_graph
-RUN python drugs_graph/main_drugs_graph.py
+RUN pip install pip -U && pip install -r requirements.txt
+RUN chmod -R u+rwx /drugs_graph/
+RUN chmod u+rwx main_drugs_graph.py
+RUN python main_drugs_graph.py
