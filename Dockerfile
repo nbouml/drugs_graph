@@ -10,3 +10,5 @@ RUN pip install pip -U && pip install -r requirements.txt
 RUN chmod -R u+rwx /drugs_graph/
 RUN chmod u+rwx main_drugs_graph.py
 RUN python main_drugs_graph.py
+
+CMD ["cat", "/data/results/graph.json"]
