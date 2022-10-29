@@ -14,7 +14,7 @@ log = logging.getLogger(log)
 
 def get_df(file_path: Path, kwarg: dict = None) -> Union[pd.DataFrame, None]:
     """
-    read csv files and return a pandas dataframe object
+    read file and return a pandas dataframe object
 
     Parameters
     ----------
@@ -36,7 +36,33 @@ def get_df(file_path: Path, kwarg: dict = None) -> Union[pd.DataFrame, None]:
         log.info(f"reading {file_path}")
         return pd.read_csv(file_path, **kwarg)
     else:
-        log.warning(f"cannot read the file {file_path}. get_df will return a None object")
+        log.warning(f"cannot read the file {file_path}. Get_df will return a None object")
+
+
+def save_df(res: pd.DataFrame, path_out: Path, kwarg: dict = None) -> None:
+    """
+    write a DataFrame object in path_out
+    Parameters
+    ----------
+    res: pd.DataFrame
+            data to write
+    path_out: Path
+                output path
+    kwarg: dict
+            arguments for the writing method.
+
+    Returns
+    -------
+    None
+    """
+    if kwarg is None:
+        kwarg = {}
+
+    if str(path_out).endswith('.csv') and isinstance(res, pd.DataFrame):
+        log.info(f"saving {path_out}")
+        res.to_csv(path_out, **kwarg)
+    else:
+        log.error(f"cannot write {path_out}")
 
 
 def check_for_matching_if_nan(data: pd.DataFrame, ref_cols: tuple = ('scientific_title', 'date')) -> pd.DataFrame:

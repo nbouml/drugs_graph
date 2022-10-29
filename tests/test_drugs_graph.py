@@ -1,3 +1,4 @@
+import os
 from typing import Union
 
 import pandas as pd
@@ -40,6 +41,19 @@ def test_check_for_matching_if_nan(data_in, ref_cols, expected):
 def test_get_df(path, kwargs, expected):
     res = utils.get_df(path, kwargs)
     pd.testing.assert_frame_equal(res, expected)
+
+
+@pytest.mark.parametrize(
+    "path, kwargs, expected",
+    (
+            [Path(f"{DATA_FOLDER}/temp.csv"), {}, df_out1],
+    )
+)
+def test_save_df(path, kwargs, expected):
+    utils.save_df(expected, path, kwargs)
+    res = utils.get_df(path, {'index_col': 0})
+    pd.testing.assert_frame_equal(res, expected)
+    os.remove(path)
 
 
 @pytest.mark.parametrize(
