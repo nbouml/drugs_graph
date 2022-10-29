@@ -1,9 +1,10 @@
 import os
-from typing import Union
+from typing import Union, Callable
 
+import numpy as np
 import pandas as pd
 from pathlib import Path
-from drugs_graph.src import utils
+from drugs_graph.src import utils, engines
 # noinspection PyPackageRequirements
 import pytest
 
@@ -102,3 +103,26 @@ def test_str_sniffer(str_target: str, df_to_sniff: pd.DataFrame,
     expected = expected.to_list()
     res = res.to_list()
     assert res == expected
+
+
+@pytest.mark.parametrize(
+    "opera, file_path_in, file_path_out, args_opera, kwargs_opera, kwargs_get_df, kwargs_save_df, expected",
+    (
+            [
+                np.sum,
+                DATA_FOLDER / "input3.csv",
+                DATA_FOLDER / "temp3.csv",
+                None,
+                None,
+                {"index_col": 0},
+                None,
+                1085
+
+             ],
+    )
+)
+def test_apply_operation(opera: Callable, file_path_in, file_path_out, args_opera,
+                         kwargs_opera, kwargs_get_df, kwargs_save_df, expected: int):
+    res = engines.apply_operation(opera, file_path_in, file_path_out, args_opera,
+                                  kwargs_opera, kwargs_get_df, kwargs_save_df,)
+    assert sum(res) == expected
