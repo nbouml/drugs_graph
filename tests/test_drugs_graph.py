@@ -13,6 +13,7 @@ DATA_FOLDER = Path(__file__, fs="local").parent / "data"
 df_in1 = pd.read_csv(f"{DATA_FOLDER}/input1.csv", index_col=0)
 df_out1 = pd.read_csv(f"{DATA_FOLDER}/output1.csv", index_col=0)
 df_in2 = pd.read_csv(f"{DATA_FOLDER}/input2.csv", index_col=0)
+df_in3 = pd.read_csv(f"{DATA_FOLDER}/input3.csv", index_col=0)
 df_out2 = df_in2.copy()
 df_out2['a'] = pd.to_datetime(df_out2['a'], dayfirst=True)
 df_out3 = df_out2.copy()
@@ -126,3 +127,14 @@ def test_apply_operation(opera: Callable, file_path_in, file_path_out, args_oper
     res = engines.apply_operation(opera, file_path_in, file_path_out, args_opera,
                                   kwargs_opera, kwargs_get_df, kwargs_save_df,)
     assert sum(res) == expected
+
+
+@pytest.mark.parametrize(
+    "df1, df2, cols_comm, index_col, expected",
+    (
+            [df_in3, df_in3, ('a', 'b'), 'a', df_in3],
+    )
+)
+def test_concat_cols_from_dfs(df1, df2, cols_comm, index_col, expected):
+    res = utils.concat_cols_from_dfs(df1, df2, cols_comm, index_col)
+    pd.testing.assert_frame_equal(res, expected.set_index('a'))

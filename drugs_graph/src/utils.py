@@ -189,3 +189,38 @@ def get_sub_target_dict(data: pd.DataFrame, str_target: str, col_to_key: str, co
     sub_df = data.loc[index, [col_to_key, col_to_value]]
     sub_df = sub_df.set_index(col_to_key)
     return sub_df[col_to_value].to_dict()
+
+
+def concat_cols_from_dfs(df1: pd.DataFrame,
+                         df2: pd.DataFrame,
+                         cols_comm: tuple,
+                         index_col: str):
+    """
+    concat two dataframe
+
+    Parameters
+    ----------
+    df1: pd.DataFrame
+        dataframe 1 to concat
+    df2: pd.DataFrame
+        The dataframe to concat
+    cols_comm: tuple
+        common columns between df1 and df2
+    index_col: str
+        columns in cols_comm that will be index in dataframe output
+    Returns
+    -------
+    pd.DataFrame
+
+    """
+    cols_comm = list(cols_comm)
+    df1 = df1[cols_comm].copy()
+    df1.set_index(index_col, inplace=True)
+
+    df2 = df2[cols_comm].copy()
+    df2.set_index(index_col, inplace=True)
+    df = pd.concat([df1, df2])
+
+    df = df.reset_index()
+    df = df.drop_duplicates().set_index(index_col)
+    return df
