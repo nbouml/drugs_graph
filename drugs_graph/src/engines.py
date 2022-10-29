@@ -1,15 +1,26 @@
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Union
 
 from drugs_graph.src import utils as ut
+from drugs_graph.conf.settings import engine_type
+
+_engine = None
+
+
+def get_engine():
+    global _engine
+    if not _engine:
+        if engine_type.lower() == 'memory':
+            _engine = MemoryEngine()
+    return _engine
 
 
 def apply_operation(opera: Callable,
-                    file_path_in: Path,
+                    file_path_in: Union[Path, tuple],
                     file_path_out: Path,
                     args_opera: dict = None,
                     kwargs_opera: dict = None,
-                    kwargs_get_df: dict = None,
+                    kwargs_get_df: Union[dict, tuple] = None,
                     kwargs_save_df: dict = None):
     """
     Apply an operation on a file located in path_file_in and save the result in path_file_out
@@ -43,12 +54,20 @@ def apply_operation(opera: Callable,
     if kwargs_opera is None:
         kwargs_opera = {}
     if kwargs_get_df is None:
-        kwargs_get_df = {}
+        kwargs_get_df = {'index_col': 0}
     if kwargs_save_df is None:
         kwargs_save_df = {}
 
-    data_in = ut.get_df(file_path_in, kwargs_get_df)
-    res = opera(data_in, *args_opera, **kwargs_opera)
+    if isinstance(file_path_in, tuple):
+        data_in = []
+        if len(kwargs_get_df) == 1:
+            kwargs_get_df = [kwargs_get_df] * len(file_path_in)
+        for i, fp in enumerate(file_path_in):
+            data_in += ut.get_df(fp, kwargs_get_df[i])
+        res = opera(*data_in, *args_opera, **kwargs_opera)
+    else:
+        data_in = ut.get_df(file_path_in, kwargs_get_df)
+        res = opera(data_in, *args_opera, **kwargs_opera)
     ut.save_df(res, file_path_out, kwargs_save_df)
 
     return res
@@ -59,21 +78,24 @@ class MemoryEngine:
         self._operations = []
         self.data = None
 
-    def submit(self, operator, data, args):
-        args = self.get_args(args)
-        data = self.get_data(data)
-        res = operator(*data, **args)
+    def submit(self, opera: Callable,
+               file_path_in: Path,
+               file_path_out: Path,
+               args_opera: dict = None,
+               kwargs_opera: dict = None,
+               kwargs_get_df: dict = None,
+               kwargs_save_df: dict = None):
+        res = apply_operation(opera=opera,
+                              file_path_in=file_path_in,
+                              file_path_out=file_path_out,
+                              args_opera=args_opera,
+                              kwargs_opera=kwargs_opera,
+                              kwargs_get_df=kwargs_get_df,
+                              kwargs_save_df=kwargs_save_df)
         self._operations.append(res)
         self.data = res
+
         return self
-
-    @staticmethod
-    def get_args(args):
-        return args
-
-    @staticmethod
-    def get_data(data):
-        return data
 
     def result(self):
         return self.data
