@@ -63,7 +63,8 @@ def apply_operation(opera: Callable,
         if len(kwargs_get_df) == 1:
             kwargs_get_df = [kwargs_get_df] * len(file_path_in)
         for i, fp in enumerate(file_path_in):
-            data_in += ut.get_df(fp, kwargs_get_df[i])
+            data_in += [ut.get_df(fp, kwargs_get_df[i])]
+        data_in = tuple(data_in)
         res = opera(*data_in, *args_opera, **kwargs_opera)
     else:
         data_in = ut.get_df(file_path_in, kwargs_get_df)
