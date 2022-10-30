@@ -34,3 +34,5 @@ journals_file = os.getenv('DRUGS_GRAPH_JOURNALS_FILE', '')
 output_file = os.getenv('DRUGS_GRAPH_OUTPUT_FILE', '')
 
 cols_ref_ct = tuple(os.getenv('DRUGS_GRAPH_COLS_REF_CT', '').split(','))
+
+engine_type = os.getenv('DRUGS_GRAPH_ENGINE', '')
