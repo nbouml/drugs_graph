@@ -3,6 +3,13 @@ from typing import Callable, Union
 
 from drugs_graph.src import utils as ut
 from drugs_graph.conf.settings import engine_type
+import logging
+from drugs_graph.set_logging import setup_logger
+
+logfile = "drugs_graph.log"
+log = 'engines'
+setup_logger(log, logfile, logging.DEBUG)
+log = logging.getLogger(log)
 
 _engine = None
 
@@ -17,7 +24,7 @@ def get_engine():
 
 def apply_operation(opera: Callable,
                     file_path_in: Union[Path, tuple],
-                    file_path_out: Path,
+                    file_path_out: Path = None,
                     args_opera: dict = None,
                     kwargs_opera: dict = None,
                     kwargs_get_df: Union[dict, tuple] = None,
@@ -58,6 +65,7 @@ def apply_operation(opera: Callable,
     if kwargs_save_df is None:
         kwargs_save_df = {}
 
+    log.info(f"applying {opera.__name__} operation on {file_path_in}")
     if isinstance(file_path_in, tuple):
         data_in = []
         if len(kwargs_get_df) == 1:
@@ -69,7 +77,11 @@ def apply_operation(opera: Callable,
     else:
         data_in = ut.get_df(file_path_in, kwargs_get_df)
         res = opera(data_in, *args_opera, **kwargs_opera)
-    ut.save_df(res, file_path_out, kwargs_save_df)
+
+    if file_path_out is not None:
+        ut.save_df(res, file_path_out, kwargs_save_df)
+    else:
+        log.info(f"the result of {opera.__name__} method, will not be saved automatically")
 
     return res
 
@@ -81,7 +93,7 @@ class MemoryEngine:
 
     def submit(self, opera: Callable,
                file_path_in: Path,
-               file_path_out: Path,
+               file_path_out: Path = None,
                args_opera: dict = None,
                kwargs_opera: dict = None,
                kwargs_get_df: dict = None,
