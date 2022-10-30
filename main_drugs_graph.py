@@ -1,4 +1,5 @@
 import json
+import os
 
 from drugs_graph.conf import settings as s
 from drugs_graph.src import utils as ut
@@ -14,16 +15,20 @@ log = 'main'
 setup_logger(log, logfile, logging.DEBUG)
 log = logging.getLogger(log)
 
-# reading and dataprep
-
-log.info('Start')
-
 engine = get_engine()
 input_data_path = s.input_data_path
 base_path = s.input_base_path
 
 
 def data_prep_clin_t():
+    """
+    data preparation for clinical trials tile
+
+    Returns
+    -------
+    None
+
+    """
     fp_in = input_data_path / s.clinical_trials_file
     engine.submit(ut.check_for_matching_if_nan,
                   fp_in,
@@ -37,6 +42,14 @@ def data_prep_clin_t():
 
 
 def data_prep_pubmed():
+    """
+    data preparation for PubMed file
+
+    Returns
+    -------
+    None
+
+    """
     fp_in = input_data_path / s.pubmed_file
     f_out = base_path / s.pubmed_file
 
@@ -47,6 +60,14 @@ def data_prep_pubmed():
 
 
 def data_prep_drug():
+    """
+    data preparation for drugs file
+
+    Returns
+    -------
+    None
+
+    """
     file_name = s.drugs_file
 
     fp_in = input_data_path / file_name
@@ -58,6 +79,14 @@ def data_prep_drug():
 
 
 def build_journals_df():
+    """
+    Construction of journals table.
+
+    Returns
+    -------
+    None
+
+    """
     file_name = s.journals_file
     files_path = (base_path / s.pubmed_file, base_path / s.clinical_trials_file)
 
@@ -74,8 +103,10 @@ def build_journals_df():
 def group_by_for_df_journals():
     """
     group journals by dates
+
     Returns
     -------
+    None
 
     """
     def my_gb(df_in):
@@ -90,6 +121,14 @@ def group_by_for_df_journals():
 
 
 def final_result():
+    """
+    Build and save the final result.
+
+    Returns
+    -------
+    None
+
+    """
     def do_result(df_ct, df_journ, df_drug, df_pub):
         drug_names = df_drug.drug.to_list()
         res = {}
@@ -104,12 +143,33 @@ def final_result():
     files = [s.clinical_trials_file, s.journals_file, s.drugs_file, s.pubmed_file]
     files_path = tuple([base_path / i for i in files])
 
-    # step 3
     engine.submit(do_result,
                   files_path,
                   None)
 
 
+def cleaning():
+    """
+    Clean temporary files
+
+    Returns
+    -------
+    None
+
+    """
+    def del_files(_dummy, path):
+        for file_name in os.listdir(path):
+            file = path / file_name
+            if os.path.isfile(file):
+                log.info(f'Deleting file: {str(file)}')
+                os.remove(file)
+
+    engine.submit(del_files,
+                  base_path,
+                  kwargs_opera={'path': base_path})
+
+
+log.info('Start')
 # step 1
 data_prep_clin_t()
 data_prep_pubmed()
@@ -121,5 +181,8 @@ group_by_for_df_journals()
 
 # step 3
 final_result()
+
+# step 4
+cleaning()
 
 log.info('end')
