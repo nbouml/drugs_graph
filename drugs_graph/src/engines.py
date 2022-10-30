@@ -21,7 +21,7 @@ def get_engine():
 
     Returns
     -------
-    Any
+
     object engine
     """
     global _engine
