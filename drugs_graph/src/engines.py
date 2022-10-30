@@ -15,6 +15,15 @@ _engine = None
 
 
 def get_engine():
+    """
+    return the engine that will be used.
+    To change the engine you can do it in .env by modifying settings.engine_type
+
+    Returns
+    -------
+    Any
+    object engine
+    """
     global _engine
     if not _engine:
         if engine_type.lower() == 'memory':
@@ -36,18 +45,18 @@ def apply_operation(opera: Callable,
     ----------
     opera: Callable
             method to apply
-    file_path_in: Path.
-                Path of the input file
-    file_path_out: Path.
-                Path of the output result
+    file_path_in: Path
+            The Path of the input file
+    file_path_out: Path
+            The Path of the output result
     args_opera: dict
-                args for operation
+            args for operation
     kwargs_opera: dict
-                kwargs for operation
+            kwargs for operation
     kwargs_get_df: dict
-                kwargs for get_df function
+            kwargs for get_df function
     kwargs_save_df: dict
-                kwargs for save_df function
+            kwargs for save_df function
 
     Returns
     -------
@@ -87,6 +96,9 @@ def apply_operation(opera: Callable,
 
 
 class MemoryEngine:
+    """
+    This engine will perform the calculation in memory and sequentially.
+    """
     def __init__(self):
         self._operations = []
         self.data = None
@@ -98,6 +110,31 @@ class MemoryEngine:
                kwargs_opera: dict = None,
                kwargs_get_df: dict = None,
                kwargs_save_df: dict = None):
+        """
+        This method will submit a job to apply_operation
+
+        Parameters
+        ----------
+        opera: Callable
+                method to apply
+        file_path_in: Path
+                The Path of the input file
+        file_path_out: Path
+                The Path of the output result
+        args_opera: dict
+                args for operation
+        kwargs_opera: dict
+                kwargs for operation
+        kwargs_get_df: dict
+                kwargs for get_df function
+        kwargs_save_df: dict
+                kwargs for save_df function
+
+        Returns
+        -------
+        MemoryEngine
+
+        """
         res = apply_operation(opera=opera,
                               file_path_in=file_path_in,
                               file_path_out=file_path_out,
@@ -111,11 +148,29 @@ class MemoryEngine:
         return self
 
     def result(self):
+        """
+        Get the result
+
+        Returns
+        -------
+        self.data
+
+        """
         return self.data
 
     def wait(self):
+        """
+        Wait method
+
+        Returns
+        -------
+
+        """
         pass
 
 
 class OtherEngine:
+    """
+    You can implement other engines.
+    """
     pass
