@@ -100,7 +100,7 @@ def build_journals_df():
 
     f_out = base_path / file_name
 
-    cols_comm = (s.journal_str, s.date_str)
+    cols_comm = (s.journal_str, s.date_str, s.title_str)
     engine.submit(ut.concat_cols_from_dfs,
                   files_path,
                   f_out,
@@ -118,6 +118,9 @@ def group_by_for_df_journals():
 
     """
     def my_gb(df_in):
+        df_in = df_in.reset_index()
+        df_in = df_in.drop_duplicates([s.journal_str, s.date_str])
+        df_in = df_in.set_index(s.journal_str)
         df_in = df_in.groupby(s.journal_str).transform(lambda x: ','.join(x))
         return df_in
 
@@ -141,9 +144,13 @@ def final_result():
         drug_names = df_drug.drug.to_list()
         res = {}
         for drug in drug_names:
+            df_journ_drug = df_journ.copy()
+            df_journ_drug.reset_index(inplace=True)
+            idx_drug_journ = ut.str_sniffer(drug, df_journ_drug, s.title_str)
+            df_journ_drug = df_journ_drug.loc[idx_drug_journ].set_index(s.journal_str)
             res[drug] = {s.pubmed_str: ut.get_sub_target_dict(df_pub, drug, s.title_str, s.date_str),
-                         s.clinical_trials_str: ut.get_sub_target_dict(df_ct, drug, s.scientific_title_str, s.date_str),
-                         s.journal_str: df_journ.to_dict()}
+                         s.clinical_trials_str: ut.get_sub_target_dict(df_ct, drug, s.title_str, s.date_str),
+                         s.journal_str: df_journ_drug[s.date_str].to_dict()}
 
         with open(s.results_path / s.output_file, 'w') as f:
             json.dump(res, f)
