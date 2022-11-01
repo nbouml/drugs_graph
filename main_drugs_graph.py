@@ -29,16 +29,24 @@ def data_prep_clin_t():
     None
 
     """
+    def rename_col(df, dict_rename):
+        return df.rename(columns=dict_rename)
     fp_in = input_data_path / s.clinical_trials_file
-    engine.submit(ut.check_for_matching_if_nan,
-                  fp_in,
-                  base_path / s.clinical_trials_file,
-                  kwargs_opera={'ref_cols': s.cols_ref_ct})
+    clin_t_v1 = engine.submit(ut.check_for_matching_if_nan,
+                              fp_in,
+                              base_path / s.clinical_trials_file,
+                              kwargs_opera={'ref_cols': s.cols_ref_ct})
 
-    engine.submit(ut.convert_col_in_datetime,
+    clin_t_v2 = engine.submit(ut.convert_col_in_datetime,
+                              clin_t_v1.result(),
+                              base_path / s.clinical_trials_file,
+                              kwargs_opera={'columns': ('date',), 'day_first': True})
+
+    engine.submit(rename_col,
+                  clin_t_v2.result(),
                   base_path / s.clinical_trials_file,
-                  base_path / s.clinical_trials_file,
-                  kwargs_opera={'columns': ('date',), 'day_first': True})
+                  kwargs_opera={'dict_rename': {s.scientific_title_str: s.title_str}}
+                  )
 
 
 def data_prep_pubmed():
