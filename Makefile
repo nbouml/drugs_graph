@@ -7,8 +7,8 @@ endif
 
 .PHONY: build
 build:
-	sudo docker build . -t dgraph
+	docker build . -t dgraph
 
 .PHONY: run
 run:
-	sudo docker run dgraph > ${DRUGS_GRAPH_DOCKER_OUTPUT_PATH}/${DRUGS_GRAPH_OUTPUT_FILE}
+	docker run dgraph > ${DRUGS_GRAPH_DOCKER_OUTPUT_PATH}/${DRUGS_GRAPH_OUTPUT_FILE}
