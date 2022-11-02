@@ -1,6 +1,5 @@
 #FROM $cloud/$image
 FROM python:3.9-buster
-#FROM puckel/docker-airflow
 
 COPY requirements.txt .
 COPY main_drugs_graph.py .

@@ -184,20 +184,21 @@ def cleaning():
                   kwargs_opera={'path': base_path})
 
 
-log.info('Start')
-# step 1
-data_prep_clin_t()
-data_prep_pubmed()
-data_prep_drug()
+if __name__ == "__main__":
+    log.info('Start')
+    # step 1
+    data_prep_clin_t()
+    data_prep_pubmed()
+    data_prep_drug()
 
-# step 2
-build_journals_df()
-group_by_for_df_journals()
+    # step 2
+    build_journals_df()
+    group_by_for_df_journals()
 
-# step 3
-final_result()
+    # step 3
+    final_result()
 
-# step 4
-cleaning()
+    # step 4
+    cleaning()
 
-log.info('end')
+    log.info('end')
