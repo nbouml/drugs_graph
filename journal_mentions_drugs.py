@@ -3,7 +3,7 @@ from drugs_graph.conf import settings as s
 
 df_res = pd.read_json(s.results_path / s.output_file)
 
-series_journal = df_res.loc['journal']
+series_journal = df_res.loc[s.journal_str]
 list_dict_journal = series_journal.to_list()
 list_all_journal = []
 
