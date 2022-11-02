@@ -1,5 +1,7 @@
 from pathlib import Path
-from typing import Callable, Union
+from typing import Callable, Union, Tuple
+
+import pandas as pd
 
 from drugs_graph.src import utils as ut
 from drugs_graph.conf.settings import engine_type
@@ -15,6 +17,15 @@ _engine = None
 
 
 def get_engine():
+    """
+    return the engine that will be used.
+    To change the engine you can do it in .env by modifying settings.engine_type
+
+    Returns
+    -------
+
+    object engine
+    """
     global _engine
     if not _engine:
         if engine_type.lower() == 'memory':
@@ -23,7 +34,7 @@ def get_engine():
 
 
 def apply_operation(opera: Callable,
-                    file_path_in: Union[Path, tuple],
+                    input_any: Union[Path, Tuple[Path], pd.DataFrame, Tuple[pd.DataFrame]],
                     file_path_out: Path = None,
                     args_opera: dict = None,
                     kwargs_opera: dict = None,
@@ -36,18 +47,18 @@ def apply_operation(opera: Callable,
     ----------
     opera: Callable
             method to apply
-    file_path_in: Path.
-                Path of the input file
-    file_path_out: Path.
-                Path of the output result
+    input_any: Path(s), or Df(s)
+            The Path(s) or Df(s) of the input data
+    file_path_out: Path
+            The Path of the output result
     args_opera: dict
-                args for operation
+            args for operation
     kwargs_opera: dict
-                kwargs for operation
+            kwargs for operation
     kwargs_get_df: dict
-                kwargs for get_df function
+            kwargs for get_df function
     kwargs_save_df: dict
-                kwargs for save_df function
+            kwargs for save_df function
 
     Returns
     -------
@@ -65,17 +76,23 @@ def apply_operation(opera: Callable,
     if kwargs_save_df is None:
         kwargs_save_df = {}
 
-    log.info(f"applying {opera.__name__} operation on {file_path_in}")
-    if isinstance(file_path_in, tuple):
+    log.info(f"applying {opera.__name__} operation")
+    if isinstance(input_any, tuple):
         data_in = []
         if len(kwargs_get_df) == 1:
-            kwargs_get_df = [kwargs_get_df] * len(file_path_in)
-        for i, fp in enumerate(file_path_in):
-            data_in += [ut.get_df(fp, kwargs_get_df[i])]
+            kwargs_get_df = [kwargs_get_df] * len(input_any)
+        for i, fp in enumerate(input_any):
+            if isinstance(fp, Path):
+                data_in += [ut.get_df(fp, kwargs_get_df[i])]
+            else:
+                data_in += [input_any[i]]
         data_in = tuple(data_in)
         res = opera(*data_in, *args_opera, **kwargs_opera)
     else:
-        data_in = ut.get_df(file_path_in, kwargs_get_df)
+        if isinstance(input_any, Path):
+            data_in = ut.get_df(input_any, kwargs_get_df)
+        else:
+            data_in = input_any.copy()
         res = opera(data_in, *args_opera, **kwargs_opera)
 
     if file_path_out is not None:
@@ -87,6 +104,9 @@ def apply_operation(opera: Callable,
 
 
 class MemoryEngine:
+    """
+    This engine will perform the calculation in memory and sequentially.
+    """
     def __init__(self):
         self._operations = []
         self.data = None
@@ -98,24 +118,62 @@ class MemoryEngine:
                kwargs_opera: dict = None,
                kwargs_get_df: dict = None,
                kwargs_save_df: dict = None):
-        res = apply_operation(opera=opera,
-                              file_path_in=file_path_in,
-                              file_path_out=file_path_out,
-                              args_opera=args_opera,
-                              kwargs_opera=kwargs_opera,
-                              kwargs_get_df=kwargs_get_df,
-                              kwargs_save_df=kwargs_save_df)
+        """
+        This method will submit a job to apply_operation
+
+        Parameters
+        ----------
+        opera: Callable
+                method to apply
+        file_path_in: Path
+                The Path of the input file
+        file_path_out: Path
+                The Path of the output result
+        args_opera: dict
+                args for operation
+        kwargs_opera: dict
+                kwargs for operation
+        kwargs_get_df: dict
+                kwargs for get_df function
+        kwargs_save_df: dict
+                kwargs for save_df function
+
+        Returns
+        -------
+        MemoryEngine
+
+        """
+        res = apply_operation(opera=opera, input_any=file_path_in, file_path_out=file_path_out, args_opera=args_opera,
+                              kwargs_opera=kwargs_opera, kwargs_get_df=kwargs_get_df, kwargs_save_df=kwargs_save_df)
         self._operations.append(res)
         self.data = res
 
         return self
 
     def result(self):
+        """
+        Get the result
+
+        Returns
+        -------
+        self.data
+
+        """
         return self.data
 
     def wait(self):
+        """
+        Wait method
+
+        Returns
+        -------
+
+        """
         pass
 
 
 class OtherEngine:
+    """
+    You can implement other engines.
+    """
     pass

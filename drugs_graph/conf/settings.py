@@ -36,3 +36,9 @@ output_file = os.getenv('DRUGS_GRAPH_OUTPUT_FILE', '')
 cols_ref_ct = tuple(os.getenv('DRUGS_GRAPH_COLS_REF_CT', '').split(','))
 
 engine_type = os.getenv('DRUGS_GRAPH_ENGINE', '')
+
+if not input_base_path.is_dir():
+    os.mkdir(input_base_path)
+
+if not results_path.is_dir():
+    os.mkdir(results_path)

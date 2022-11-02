@@ -16,7 +16,7 @@
 
 To run the code with docker you have to build the image: 
 `make build` and run it with: `make run`. 
-The result will saved in `DRUGS_GRAPH_RESULTS_PATH`
+The result will saved in `DRUGS_GRAPH_DOCKER_OUTPUT_PATH`
 
 # Drugs graph
 
@@ -44,6 +44,7 @@ The `img` repository is for documentation images.
 DRUGS_GRAPH_INPUT_DATA_PATH=data
 DRUGS_GRAPH_BASE_PATH=data/base
 DRUGS_GRAPH_RESULTS_PATH=data/results
+DRUGS_GRAPH_DOCKER_OUTPUT_PATH=.
 
 DRUGS_GRAPH_CLINICAL_TRIALS_FILE=clinical_trials.csv
 DRUGS_GRAPH_DRUGS_FILE=drugs.csv

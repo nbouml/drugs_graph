@@ -11,4 +11,4 @@ build:
 
 .PHONY: run
 run:
-	sudo docker run dgraph > ${DRUGS_GRAPH_RESULTS_PATH}/${DRUGS_GRAPH_OUTPUT_FILE}
+	sudo docker run dgraph > ${DRUGS_GRAPH_DOCKER_OUTPUT_PATH}/${DRUGS_GRAPH_OUTPUT_FILE}

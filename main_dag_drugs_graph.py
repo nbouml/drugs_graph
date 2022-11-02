@@ -1,3 +1,11 @@
+import pendulum
+
+# The DAG object; we'll need this to instantiate a DAG
+from airflow import DAG
+
+# Operators; we need this to operate!
+from airflow.operators.python import PythonOperator
+
 import json
 import os
 
@@ -29,24 +37,16 @@ def data_prep_clin_t():
     None
 
     """
-    def rename_col(df, dict_rename):
-        return df.rename(columns=dict_rename)
     fp_in = input_data_path / s.clinical_trials_file
-    clin_t_v1 = engine.submit(ut.check_for_matching_if_nan,
-                              fp_in,
-                              base_path / s.clinical_trials_file,
-                              kwargs_opera={'ref_cols': s.cols_ref_ct})
-
-    clin_t_v2 = engine.submit(ut.convert_col_in_datetime,
-                              clin_t_v1.result(),
-                              base_path / s.clinical_trials_file,
-                              kwargs_opera={'columns': ('date',), 'day_first': True})
-
-    engine.submit(rename_col,
-                  clin_t_v2.result(),
+    engine.submit(ut.check_for_matching_if_nan,
+                  fp_in,
                   base_path / s.clinical_trials_file,
-                  kwargs_opera={'dict_rename': {s.scientific_title_str: s.title_str}}
-                  )
+                  kwargs_opera={'ref_cols': s.cols_ref_ct})
+
+    engine.submit(ut.convert_col_in_datetime,
+                  base_path / s.clinical_trials_file,
+                  base_path / s.clinical_trials_file,
+                  kwargs_opera={'columns': ('date',), 'day_first': True})
 
 
 def data_prep_pubmed():
@@ -100,7 +100,7 @@ def build_journals_df():
 
     f_out = base_path / file_name
 
-    cols_comm = (s.journal_str, s.date_str, s.title_str)
+    cols_comm = (s.journal_str, s.date_str)
     engine.submit(ut.concat_cols_from_dfs,
                   files_path,
                   f_out,
@@ -118,9 +118,6 @@ def group_by_for_df_journals():
 
     """
     def my_gb(df_in):
-        df_in = df_in.reset_index()
-        df_in = df_in.drop_duplicates([s.journal_str, s.date_str])
-        df_in = df_in.set_index(s.journal_str)
         df_in = df_in.groupby(s.journal_str).transform(lambda x: ','.join(x))
         return df_in
 
@@ -144,13 +141,9 @@ def final_result():
         drug_names = df_drug.drug.to_list()
         res = {}
         for drug in drug_names:
-            df_journ_drug = df_journ.copy()
-            df_journ_drug.reset_index(inplace=True)
-            idx_drug_journ = ut.str_sniffer(drug, df_journ_drug, s.title_str)
-            df_journ_drug = df_journ_drug.loc[idx_drug_journ].set_index(s.journal_str)
             res[drug] = {s.pubmed_str: ut.get_sub_target_dict(df_pub, drug, s.title_str, s.date_str),
-                         s.clinical_trials_str: ut.get_sub_target_dict(df_ct, drug, s.title_str, s.date_str),
-                         s.journal_str: df_journ_drug[s.date_str].to_dict()}
+                         s.clinical_trials_str: ut.get_sub_target_dict(df_ct, drug, s.scientific_title_str, s.date_str),
+                         s.journal_str: df_journ.to_dict()}
 
         with open(s.results_path / s.output_file, 'w') as f:
             json.dump(res, f)
@@ -185,14 +178,20 @@ def cleaning():
 
 
 log.info('Start')
+
+
 # step 1
-data_prep_clin_t()
-data_prep_pubmed()
-data_prep_drug()
+def data_prep():
+    data_prep_clin_t()
+    data_prep_pubmed()
+    data_prep_drug()
+
 
 # step 2
-build_journals_df()
-group_by_for_df_journals()
+def get_journals_df():
+    build_journals_df()
+    group_by_for_df_journals()
+
 
 # step 3
 final_result()
@@ -201,3 +200,34 @@ final_result()
 cleaning()
 
 log.info('end')
+
+log.info('Graph construction')
+
+
+with DAG(
+    dag_id="Drugs_graph",
+    schedule_interval="@once",
+    start_date=pendulum.datetime(2022, 10, 25, tz="UTC")
+) as dag:
+
+    data_prep = PythonOperator(
+        task_id='data_prep',
+        python_callable=data_prep,
+    )
+
+    get_journals_cleand = PythonOperator(
+        task_id='journals',
+        python_callable=get_journals_df,
+    )
+
+    final_results = PythonOperator(
+        task_id='final_results',
+        python_callable=final_result,
+    )
+
+    cleaning = PythonOperator(
+        task_id='cleaning',
+        python_callable=cleaning,
+    )
+
+    data_prep >> get_journals_cleand >> final_results >> cleaning
