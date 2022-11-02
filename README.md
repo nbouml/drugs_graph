@@ -39,6 +39,7 @@ The configuration and methods are located in `drugs_graph/conf` and `drugs_graph
 The `img` repository is for documentation images.
 
 # Configuration
+Here are the .env environment variables needed for the project to work.
 
 ```
 DRUGS_GRAPH_INPUT_DATA_PATH=data
